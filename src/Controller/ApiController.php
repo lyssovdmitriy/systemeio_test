@@ -86,8 +86,6 @@ namespace App\Controller {
                     $paymentService->ProcessPayment(PaymentProviderList::from($data['paymentProcessor']), (int)$price * 100)
                     ? $this->json('ok', 200)
                     : $this->json($paymentService->getErrors(), 400);
-
-                // return $this->json(, 200);
             } else {
                 $errors = $buyRequest->getErrors();
             }
