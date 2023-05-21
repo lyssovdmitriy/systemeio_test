@@ -10,19 +10,21 @@ namespace App\Service {
     final class CalculationService
     {
 
-        public function getPrice(Product $product, Coupon $coupon, int $taxPercent): float
+        public function getPrice(Product $product, ?Coupon $coupon, int $taxPercent): string
         {
             $price = $product->getPrice();
 
-            if ($coupon->isIsFixed()) {
-                $price -= $coupon->getFixed();
-            } else {
-                $price -= $product->getPrice() * $coupon->getPercent() / 100;
+            if (null !== $coupon) {
+                if ($coupon->isIsFixed()) {
+                    $price -= $coupon->getFixed();
+                } else {
+                    $price -= $product->getPrice() * $coupon->getPercent() / 100;
+                }
             }
 
             $price += $price * $taxPercent / 100;
 
-            return $price;
+            return number_format($price, 2);
         }
     }
 }

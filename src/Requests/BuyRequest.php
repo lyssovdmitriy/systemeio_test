@@ -17,7 +17,7 @@ namespace App\Requests {
     use Symfony\Component\Validator\Constraints\NotBlank;
     use Symfony\Component\Validator\Constraints\NotNull;
 
-    final class PriceRequest
+    final class BuyRequest
     {
 
         private FormInterface $form;
@@ -26,7 +26,7 @@ namespace App\Requests {
         public function __construct(FormFactoryInterface $formBuilder)
         {
             $this->form = $formBuilder->createBuilder(FormType::class, null, ['csrf_protection' => false])
-                ->setMethod('GET')
+                ->setMethod('POST')
                 ->add('productId', IntegerType::class, [
                     'constraints' => [
                         new NotNull(),
@@ -60,12 +60,12 @@ namespace App\Requests {
         private function populate(): void
         {
             $request = Request::createFromGlobals();
-
+            $data = (object)$request->toArray();
             $this->form->submit([
-                'productId' => (int)$request->get('productId'),
-                'taxNumber' => $request->get('taxNumber'),
-                'paymentProcessor' => $request->get('paymentProcessor'),
-                'couponCode' => $request->get('couponCode'),
+                'productId' => (int)$data->productId,
+                'taxNumber' => $data->taxNumber,
+                'paymentProcessor' => $data->paymentProcessor,
+                'couponCode' => $data->couponCode,
 
             ]);
         }
