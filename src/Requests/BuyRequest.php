@@ -11,17 +11,13 @@ namespace App\Requests {
     use Symfony\Component\Form\Extension\Core\Type\SubmitType;
     use Symfony\Component\Form\Extension\Core\Type\TextType;
     use Symfony\Component\Form\FormFactoryInterface;
-    use Symfony\Component\Form\FormInterface;
     use Symfony\Component\HttpFoundation\Request;
     use Symfony\Component\Validator\Constraints\Choice;
     use Symfony\Component\Validator\Constraints\NotBlank;
     use Symfony\Component\Validator\Constraints\NotNull;
 
-    final class BuyRequest
+    final class BuyRequest extends AbstractRequest implements RequestInterface
     {
-
-        private FormInterface $form;
-        private array $errorMessages = [];
 
         public function __construct(FormFactoryInterface $formBuilder)
         {
@@ -60,7 +56,13 @@ namespace App\Requests {
         private function populate(): void
         {
             $request = Request::createFromGlobals();
-            $data = (object)$request->toArray();
+            try {
+                $data = (object)$request->toArray();
+            } catch (\Throwable $th) {
+                $this->addError('', $th->getMessage(), 'request');
+                return;
+            }
+
             $this->form->submit([
                 'productId' => (int)$data->productId,
                 'taxNumber' => $data->taxNumber,
@@ -68,34 +70,6 @@ namespace App\Requests {
                 'couponCode' => $data->couponCode,
 
             ]);
-        }
-
-        public function isValid(): bool
-        {
-            if ($this->form->isSubmitted() && $this->form->isValid()) {
-                return true;
-            }
-
-            foreach ($this->form->getErrors(true, true) as $error) {
-                $this->errorMessages[$error->getOrigin()->getName()][] = $error->getMessage();
-            }
-
-            return false;
-        }
-
-        public function getForm(): FormInterface
-        {
-            return $this->form;
-        }
-
-        public function getErrors(): array
-        {
-            return $this->errorMessages;
-        }
-
-        public function addError(string $cause, string $message): void
-        {
-            $this->errorMessages[$cause][] = $message;
         }
     }
 }

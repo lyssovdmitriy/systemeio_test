@@ -31,7 +31,7 @@ namespace App\Validator {
                 'DE' => ($taxNumberLength === 11 && preg_match('/^DE\d{9}$/', $value)),
                 'IT' => ($taxNumberLength === 13 && preg_match('/^IT\d{11}$/', $value)),
                 'GR' => ($taxNumberLength === 11 && preg_match('/^GR\d{9}$/', $value)),
-                'FR' => ($taxNumberLength === 13 && preg_match('/^FR\d{11}$/', $value)),
+                'FR' => ($taxNumberLength === 13 && preg_match('/^FR[A-Za-z]{2}\d{9}$/', $value)),
                 default => false,
             };
 
